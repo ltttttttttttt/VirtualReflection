@@ -49,112 +49,20 @@ dependencies {
 }
 ```
 
-Step 3.Use VirtualReflection TODO
+Step 3.Use VirtualReflection
 
-Add the @Buff to your bean, call the addBuff() transform to the new Any, The attribute (such as
-name) not in the constructor will be automatically converted to MutableState&lt;T&gt;
-
-```kotlin
-@Buff
-class BuffBean(
-    val id: Int? = null,
-) {
-    var name: String? = null
-}
-```
-
-Example(reference UseBuff.kt):
-
-```kotlin
-val buffBean = BuffBean(0)
-val bean = buffBean.addBuff()//Transform to the BuffBeanWithBuff
-bean.name//The name's getter and setter have the effect of MutableState<T>
-bean.removeBuff()//Fallback to BuffBean(optional)
-```
-
-Step 4.Add ksp dir to the srcDir
-
-Your app dir, build.gradle.kts add:
-
-```kotlin
-//If your project is the android, and the productFlavors is not set
-android {
-    buildTypes {
-        release {
-            kotlin {
-                sourceSets.main {
-                    kotlin.srcDir("build/generated/ksp/release/kotlin")
-                }
-            }
-        }
-        debug {
-            kotlin {
-                sourceSets.main {
-                    kotlin.srcDir("build/generated/ksp/debug/kotlin")
-                }
-            }
-        }
-    }
-    kotlin {
-        sourceSets.test {
-            kotlin.srcDir("build/generated/ksp/test/kotlin")
-        }
-    }
-}
-
-//If your project is the android, and the productFlavors is set
-applicationVariants.all {
-    outputs.all {
-        val flavorAndBuildTypeName = name
-        kotlin {
-            sourceSets.main {
-                kotlin.srcDir(
-                    "build/generated/ksp/${
-                        flavorAndBuildTypeName.split("-").let {
-                            it.first() + it.last()[0].toUpperCase() + it.last().substring(1)
-                        }
-                    }/kotlin"
-                )
-            }
-        }
-    }
-}
-kotlin {
-    sourceSets.test {
-        kotlin.srcDir("build/generated/ksp/test/kotlin")
-    }
-}
-
-//If your project is the jvm or more
-kotlin {
-    sourceSets.main {
-        kotlin.srcDir("build/generated/ksp/main/kotlin")
-    }
-    sourceSets.test {
-        kotlin.srcDir("build/generated/ksp/test/kotlin")
-    }
-}
-```
-
-Step 5.Config
-
-Serialize of this project uses kotlinx-serialization by default, To modify, Your app dir,
-build.gradle.kts add:
+Configure packages that require virtual reflection, Your app dir, build.gradle.kts -> android(or kotlin) add:
 
 ```kotlin
 ksp {
-    //Set the Annotation of the class, Usually as follows
-    arg("classSerializeAnnotationWithBuff", "//Not have")
-    //Set the Annotation of the field to transient, Usually as follows
-    arg("fieldSerializeTransientAnnotationWithBuff", "@kotlin.jvm.Transient")
+    arg("packageList", "com.lt.virtual_reflection.bean/*your package*/")
 }
 ```
 
-Add custom code, reference [KspOptions.handlerCustomCode], Your app dir, build.gradle.kts add:
+use
 
 ```kotlin
-ksp {
-    arg("customInClassWithBuff", "//Class end")//in class
-    arg("customInFileWithBuff", "//File end")//in file
-}
+KClass.newInstance()
+//or
+KClass.newInstance(parameters...)
 ```
