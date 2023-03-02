@@ -11,7 +11,7 @@
 
 ## ability
 
-1. TODO
+1. Set all classes in certain packages to support virtual reflection
 
 ## How to use
 
