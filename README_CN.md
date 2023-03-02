@@ -1,21 +1,21 @@
 <h1 align="center">VirtualReflection</h1>
 
-<p align="center">Virtual reflection of Kotlin all target</p>
+<p align="center">Kotlin全平台的虚拟反射</p>
 
 <p align="center">
 <img src="https://img.shields.io/badge/license-Apache%202-blue.svg?maxAge=2592000">
 <img src="https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg"/>
 </p>
 
-<div align="center">us English | <a href="https://github.com/ltttttttttttt/VirtualReflection/blob/main/README_CN.md">cn 简体中文</a></div>
+<div align="center"><a href="https://github.com/ltttttttttttt/VirtualReflection/blob/main/README.md">us English</a> | cn 简体中文</div>
 
-## ability
+## 目前功能
 
 1. TODO
 
-## How to use
+## 使用方式
 
-Step 1.Root dir, build.gradle.kts add:
+Step 1.在项目的根目录的build.gradle.kts内添加:
 
 ```kotlin
 buildscript {
@@ -33,26 +33,25 @@ allprojects {
 }
 ```
 
-Step 2.Your app dir, build.gradle.kts add:
+Step 2.在app模块目录内的build.gradle.kts内添加:
 
 version = [![](https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg)](https://jitpack.io/#ltttttttttttt/VirtualReflection)
 
 ```kotlin
 plugins {
     ...
-    id("com.google.devtools.ksp") version "1.7.10-1.0.6"//this, The left 1.7.10 corresponds to your the Kotlin version,more version: https://github.com/google/ksp/releases
+    id("com.google.devtools.ksp") version "1.7.10-1.0.6"//this,前面的1.7.10对应你的kotlin版本,更多版本参考: https://github.com/google/ksp/releases
 }
 
 dependencies {
     ...
-    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this, such as 0.0.3
+    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this,比如0.0.3
 }
 ```
 
-Step 3.Use VirtualReflection TODO
+Step 3.使用VirtualReflection TODO
 
-Add the @Buff to your bean, call the addBuff() transform to the new Any, The attribute (such as
-name) not in the constructor will be automatically converted to MutableState&lt;T&gt;
+给你的bean类加上@Buff注解,然后调用类的addBuff方法转换为新类,会将其中非构造中的属性(如name)自动转换为MutableState&lt;T&gt;
 
 ```kotlin
 @Buff
@@ -63,21 +62,21 @@ class BuffBean(
 }
 ```
 
-Example(reference UseBuff.kt):
+代码示例如下(具体可以参考项目中UseBuff.kt文件):
 
 ```kotlin
-val buffBean = BuffBean(0)
-val bean = buffBean.addBuff()//Transform to the BuffBeanWithBuff
-bean.name//The name's getter and setter have the effect of MutableState<T>
-bean.removeBuff()//Fallback to BuffBean(optional)
+val buffBean = BuffBean(0)//这个BuffBean可以自己new出来,也可以通过序列化等方式
+val bean = buffBean.addBuff()//增加Buff,类型改为BuffBeanWithBuff
+bean.name//这个name的get和set就有了MutableState<T>的效果
+bean.removeBuff()//退回为BuffBean(可选方法,可以不使用)
 ```
 
-Step 4.Add ksp dir to the srcDir
+Step 4.将ksp的代码生成目录加入源码目录
 
-Your app dir, build.gradle.kts add:
+在app模块目录内的build.gradle.kts内添加:
 
 ```kotlin
-//If your project is the android, and the productFlavors is not set
+//如果你的是安卓项目,且未设置多渠道
 android {
     buildTypes {
         release {
@@ -102,7 +101,7 @@ android {
     }
 }
 
-//If your project is the android, and the productFlavors is set
+//如果你的是安卓项目,且设置了多渠道
 applicationVariants.all {
     outputs.all {
         val flavorAndBuildTypeName = name
@@ -125,7 +124,7 @@ kotlin {
     }
 }
 
-//If your project is the jvm or more
+//如果你的是jvm等项目
 kotlin {
     sourceSets.main {
         kotlin.srcDir("build/generated/ksp/main/kotlin")
@@ -136,25 +135,24 @@ kotlin {
 }
 ```
 
-Step 5.Config
+Step 5.配置
 
-Serialize of this project uses kotlinx-serialization by default, To modify, Your app dir,
-build.gradle.kts add:
+本项目对序列化的默认支持为:kotlinx-serialization,如需修改,在app模块目录内的build.gradle.kts内添加:
 
 ```kotlin
 ksp {
-    //Set the Annotation of the class, Usually as follows
+    //设置类序列化所需要的注解,其他序列化库一般不需要,所以我们放一个注释即可
     arg("classSerializeAnnotationWithBuff", "//Not have")
-    //Set the Annotation of the field to transient, Usually as follows
+    //设置属性无需被序列化的注解,一般使用jvm中的transient关键字
     arg("fieldSerializeTransientAnnotationWithBuff", "@kotlin.jvm.Transient")
 }
 ```
 
-Add custom code, reference [KspOptions.handlerCustomCode], Your app dir, build.gradle.kts add:
+支持自定义增加代码,属性参考[KspOptions.handlerCustomCode],在app模块目录内的build.gradle.kts内添加:
 
 ```kotlin
 ksp {
-    arg("customInClassWithBuff", "//Class end")//in class
-    arg("customInFileWithBuff", "//File end")//in file
+    arg("customInClassWithBuff", "//Class end")//类内
+    arg("customInFileWithBuff", "//File end")//类外,kt文件内
 }
 ```
