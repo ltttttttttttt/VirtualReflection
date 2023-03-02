@@ -5,5 +5,16 @@ package com.lt.virtual_reflection.bean
  * effect :
  * warning:
  */
-class A {
+class A constructor() {
+}
+
+class A2 constructor() {
+    constructor(list: List<String?>?) : this()
+}
+
+class A3 private constructor()
+
+class A4 private constructor() {
+    constructor(a: A) : this()
+    constructor(a: HashMap<List<String?>?, Int?>?) : this()
 }

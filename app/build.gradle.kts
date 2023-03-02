@@ -28,11 +28,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            kotlin {
-                sourceSets.main {
-                    kotlin.srcDir("build/generated/ksp/debug/kotlin")
-                }
-            }
         }
         release {
             isMinifyEnabled = false
@@ -40,16 +35,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            kotlin {
-                sourceSets.main {
-                    kotlin.srcDir("build/generated/ksp/release/kotlin")
-                }
-            }
-        }
-    }
-    kotlin {
-        sourceSets.test {
-            kotlin.srcDir("build/generated/ksp/test/kotlin")
         }
     }
     compileOptions {
@@ -65,12 +50,9 @@ android {
     //    }
     //}
     //ksp配置
-    //ksp {
-    //    arg("customInClassWithBuff", "//Class end")
-    //    arg("customInFileWithBuff", "//File end")
-    //    arg("classSerializeAnnotationWithBuff", "//Not have")
-    //    arg("fieldSerializeTransientAnnotationWithBuff", "@kotlin.jvm.Transient")
-    //}
+    ksp {
+        arg("packageList", "com.lt.virtual_reflection.bean")
+    }
 }
 
 dependencies {

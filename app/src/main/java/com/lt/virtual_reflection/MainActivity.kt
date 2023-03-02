@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import com.lt.virtual_reflection.bean.A
 import com.lt.virtual_reflection.bean.B
-import kotlin.reflect.KClass
+import newInstance
 
 //VirtualReflection
 class MainActivity : Activity() {
@@ -17,17 +17,8 @@ class MainActivity : Activity() {
     }
 
     private fun initView(tv: TextView) {
-        tv.text = A::class.newInstance().toString()
+        tv.text = "${A::class.newInstance()}\n${B::class.newInstance(6, "VirtualReflection")}"
     }
-
-    fun <T : Any> KClass<T>.newInstance(): T {
-        return when (simpleName) {
-            "A" -> A()
-            "B" -> B()
-            else -> throw RuntimeException("$this $simpleName: Not find in VirtualReflection config")
-        } as T
-    }
-
 }
 
 
