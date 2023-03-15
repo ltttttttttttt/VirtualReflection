@@ -31,13 +31,17 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val classConstructorList = ArrayList<KSClassConstructorInfo>()
         resolver.getAllFiles()
             .filter {
-                //包名必须和配置的完全一样
-                packageList.contains(it.packageName.asString())
+                //包名如果是配置的或子包名
+                val packageName = it.packageName.asString()
+                packageList.any(packageName::contains)
             }.forEach { ksFile ->
                 resolver.getDeclarationsInSourceOrder(ksFile).forEach {
                     if (it is KSClassDeclaration && it.classKind.type == "class") {
                         if (!it.validate()) ret.add(it)
-                        else it.accept(VirtualReflectionVisitor(environment, classConstructorList), Unit)//处理符号
+                        else it.accept(
+                            VirtualReflectionVisitor(environment, classConstructorList),
+                            Unit
+                        )//处理符号
                     }
                 }
             }
