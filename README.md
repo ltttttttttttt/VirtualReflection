@@ -55,7 +55,7 @@ Configure packages that require virtual reflection, Your app dir, build.gradle.k
 
 ```kotlin
 ksp {
-    arg("packageList", "com.lt.virtual_reflection.bean/*your package*/")
+    arg("packageListVirtualReflection", "com.lt.virtual_reflection.bean/*your package*/")
 }
 ```
 

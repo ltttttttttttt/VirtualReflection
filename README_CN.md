@@ -55,7 +55,7 @@ Step 3.使用VirtualReflection
 
 ```kotlin
 ksp {
-    arg("packageList", "com.lt.virtual_reflection.bean/*你的包路径*/")
+    arg("packageListWithVirtualReflection", "com.lt.virtual_reflection.bean/*你的包路径*/")
 }
 ```
 

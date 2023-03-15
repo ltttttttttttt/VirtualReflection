@@ -51,7 +51,7 @@ android {
     //}
     //ksp配置
     ksp {
-        arg("packageList", "com.lt.virtual_reflection.bean")
+        arg("packageListVirtualReflection", "com.lt.virtual_reflection.bean")
     }
 }
 
