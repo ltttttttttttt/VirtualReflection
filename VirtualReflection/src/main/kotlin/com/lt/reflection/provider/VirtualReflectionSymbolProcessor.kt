@@ -32,7 +32,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         resolver.getAllFiles()
             .filter {
                 //包名如果是配置的或子包名
-                val packageName = it.packageName.asString()
+                val packageName = it.packageName.asString() + "."
                 packageList.any(packageName::contains)
             }.forEach { ksFile ->
                 resolver.getDeclarationsInSourceOrder(ksFile).forEach {

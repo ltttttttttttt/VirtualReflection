@@ -13,8 +13,10 @@ internal class KspOptions(environment: SymbolProcessorEnvironment) {
     private val packageList = "packageListWithVirtualReflection"
 
     /**
-     * 具体哪些包(完全相等)中的类需要虚拟反射功能,逗号隔开
+     * 具体哪些包(完全相等)中的类需要虚拟反射功能,空格隔开
      */
     fun getPackageList(): List<String> =
-        options[packageList].ifNullOfEmpty { return listOf() }.split(",")
+        options[packageList].ifNullOfEmpty { return listOf() }
+            .split(" ")
+            .map { "$it." }
 }
