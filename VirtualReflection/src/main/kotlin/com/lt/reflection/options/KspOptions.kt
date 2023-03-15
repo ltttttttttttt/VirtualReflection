@@ -10,7 +10,7 @@ import com.lt.reflection.ifNullOfEmpty
  */
 internal class KspOptions(environment: SymbolProcessorEnvironment) {
     private val options = environment.options
-    private val packageList = "packageListVirtualReflection"
+    private val packageList = "packageListWithVirtualReflection"
 
     /**
      * 具体哪些包(完全相等)中的类需要虚拟反射功能,逗号隔开
