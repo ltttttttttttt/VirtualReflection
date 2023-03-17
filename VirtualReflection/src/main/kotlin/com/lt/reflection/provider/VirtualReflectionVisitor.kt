@@ -5,6 +5,7 @@ import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
+import com.google.devtools.ksp.symbol.Modifier
 import com.lt.reflection.getKSTypeInfo
 import com.lt.reflection.options.KSClassConstructorInfo
 
@@ -23,6 +24,7 @@ internal class VirtualReflectionVisitor(
      */
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         //获取class信息并创建kt文件
+        if (Modifier.PRIVATE in classDeclaration.modifiers) return
         val packageName = classDeclaration.packageName.asString()
         val className = classDeclaration.simpleName.asString()
         classDeclaration.getConstructors()

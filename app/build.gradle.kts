@@ -55,6 +55,10 @@ android {
             "packageListWithVirtualReflection",
             "com.lt.virtual_reflection.bean com.lt.virtual_reflection.bean_d"
         )
+        //arg(
+        //    "functionNameWithVirtualReflection",
+        //    "newInstance2"
+        //)
     }
 }
 

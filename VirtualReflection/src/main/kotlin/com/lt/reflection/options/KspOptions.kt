@@ -11,6 +11,7 @@ import com.lt.reflection.ifNullOfEmpty
 internal class KspOptions(environment: SymbolProcessorEnvironment) {
     private val options = environment.options
     private val packageList = "packageListWithVirtualReflection"
+    private val functionName = "functionNameWithVirtualReflection"
 
     /**
      * 具体哪些包(完全相等)中的类需要虚拟反射功能,空格隔开
@@ -19,4 +20,10 @@ internal class KspOptions(environment: SymbolProcessorEnvironment) {
         options[packageList].ifNullOfEmpty { return listOf() }
             .split(" ")
             .map { "$it." }
+
+    /**
+     * 生成的方法名,默认newInstance
+     */
+    fun getFunctionName(): String =
+        options[functionName].ifNullOfEmpty { return "newInstance" }
 }

@@ -26,7 +26,9 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
     override fun process(resolver: Resolver): List<KSAnnotated> {
         if (isHandled) return listOf()
         isHandled = true
-        val packageList = KspOptions(environment).getPackageList()
+        val kspOptions = KspOptions(environment)
+        val packageList = kspOptions.getPackageList()
+        val functionName = kspOptions.getFunctionName()
         val ret = mutableListOf<KSAnnotated>()
         val classConstructorList = ArrayList<KSClassConstructorInfo>()
         resolver.getAllFiles()
@@ -45,12 +47,15 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                     }
                 }
             }
-        createFile(classConstructorList)
+        createFile(classConstructorList, functionName)
         //返回无法处理的符号
         return ret
     }
 
-    private fun createFile(classConstructorList: ArrayList<KSClassConstructorInfo>) {
+    private fun createFile(
+        classConstructorList: ArrayList<KSClassConstructorInfo>,
+        functionName: String
+    ) {
         val file = environment.codeGenerator.createNewFile(
             Dependencies(
                 true,
@@ -60,7 +65,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         //记录有参数的构造方法,稍后处理
         val haveArgsConstructor = ArrayList<KSClassConstructorInfo>()
         file.appendText(
-            "fun <T : Any> kotlin.reflect.KClass<T>.newInstance(): T {\n" +
+            "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(): T {\n" +
                     "    return when (simpleName) {\n"
         )
         //处理空参构造方法
@@ -78,7 +83,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         )
         //处理有参构造方法
         file.appendText(
-            "fun <T : Any> kotlin.reflect.KClass<T>.newInstance(vararg args: Any?): T {\n" +
+            "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(vararg args: Any?): T {\n" +
                     "    return when {\n"
         )
         haveArgsConstructor.forEach {

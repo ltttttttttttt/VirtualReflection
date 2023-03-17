@@ -57,6 +57,8 @@ Configure packages that require virtual reflection, Your app dir, build.gradle.k
 ksp {
     //Configure multiple paths separated by spaces
     arg("packageListWithVirtualReflection", "com.lt.virtual_reflection.bean/*your package*/")
+    //Configure the generated function name, which defaults to newInstance
+    //arg("functionNameWithVirtualReflection", xxx)
 }
 ```
 

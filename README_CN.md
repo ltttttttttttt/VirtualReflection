@@ -35,7 +35,8 @@ allprojects {
 
 Step 2.在app模块目录内的build.gradle.kts内添加:
 
-version = [![](https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg)](https://jitpack.io/#ltttttttttttt/VirtualReflection)
+version
+= [![](https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg)](https://jitpack.io/#ltttttttttttt/VirtualReflection)
 
 ```kotlin
 plugins {
@@ -57,6 +58,8 @@ Step 3.使用VirtualReflection
 ksp {
     //配置多个路径用空格隔开
     arg("packageListWithVirtualReflection", "com.lt.virtual_reflection.bean/*你的包路径*/")
+    //配置生成的方法名,默认是newInstance
+    //arg("functionNameWithVirtualReflection", xxx)
 }
 ```
 

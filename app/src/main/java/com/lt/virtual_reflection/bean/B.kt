@@ -5,7 +5,7 @@ package com.lt.virtual_reflection.bean
  * effect :
  * warning:
  */
-class B constructor() {
+internal class B constructor() {
     var a = 0
     var b = ""
 
@@ -14,9 +14,11 @@ class B constructor() {
         this.b = b ?: ""
     }
 
-    constructor(a: Long) : this()
+    private constructor(a: Long) : this()
 
     override fun toString(): String {
         return "B(a=$a, b='$b')"
     }
 }
+
+private class B2()
