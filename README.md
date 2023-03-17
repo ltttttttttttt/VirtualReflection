@@ -37,15 +37,35 @@ Step 2.Your app dir, build.gradle.kts add:
 
 version = [![](https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg)](https://jitpack.io/#ltttttttttttt/VirtualReflection)
 
+* If it is a single platform, add it to build.gradle.kts in the app module directory
+
 ```kotlin
 plugins {
     ...
     id("com.google.devtools.ksp") version "1.7.10-1.0.6"//this, The left 1.7.10 corresponds to your the Kotlin version,more version: https://github.com/google/ksp/releases
 }
-
+//The fourth step of configuring ksp to generate directory reference links: https://github.com/ltttttttttttt/Buff/blob/main/README.md
 dependencies {
     ...
-    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this, such as 0.0.3
+    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this, such as 1.0.5
+}
+```
+
+* If it is multi-platform, add it to build.gradle.kts in the common module directory
+
+```kotlin
+plugins {
+    ...
+    id("com.google.devtools.ksp") version "1.7.10-1.0.6"
+}
+...
+val commonMain by getting {
+    //Configure the ksp generation directory
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+}
+...
+dependencies {
+    add("kspCommonMainMetadata", "com.github.ltttttttttttt:VirtualReflection:$version")//this, such as 1.0.5
 }
 ```
 

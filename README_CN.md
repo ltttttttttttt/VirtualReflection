@@ -38,15 +38,35 @@ Step 2.在app模块目录内的build.gradle.kts内添加:
 version
 = [![](https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg)](https://jitpack.io/#ltttttttttttt/VirtualReflection)
 
+* 如果是单平台,在app模块目录内的build.gradle.kts内添加
+
 ```kotlin
 plugins {
     ...
     id("com.google.devtools.ksp") version "1.7.10-1.0.6"//this,前面的1.7.10对应你的kotlin版本,更多版本参考: https://github.com/google/ksp/releases
 }
-
+//配置ksp生成目录参考链接的第四步: https://github.com/ltttttttttttt/Buff/blob/main/README_CN.md?plain=1
 dependencies {
     ...
-    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this,比如1.0.0
+    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this,比如1.0.5
+}
+```
+
+* 如果是多平台,在common模块目录内的build.gradle.kts内添加
+
+```kotlin
+plugins {
+    ...
+    id("com.google.devtools.ksp") version "1.7.10-1.0.6"//this,前面的1.7.10对应你的kotlin版本,更多版本参考: https://github.com/google/ksp/releases
+}
+...
+val commonMain by getting {
+    //配置ksp生成目录
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+}
+...
+dependencies {
+    add("kspCommonMainMetadata", "com.github.ltttttttttttt:VirtualReflection:$version")//this,比如1.0.5
 }
 ```
 
@@ -71,3 +91,5 @@ KClass.newInstance()
 //使用有参构造函数构造对象
 KClass.newInstance(参数...)
 ```
+
+Step 3.使用VirtualReflection
