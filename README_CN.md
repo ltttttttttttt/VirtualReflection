@@ -91,5 +91,3 @@ KClass.newInstance()
 //使用有参构造函数构造对象
 KClass.newInstance(参数...)
 ```
-
-Step 3.使用VirtualReflection
