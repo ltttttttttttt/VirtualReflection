@@ -65,8 +65,14 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         //记录有参数的构造方法,稍后处理
         val haveArgsConstructor = ArrayList<KSClassConstructorInfo>()
         file.appendText(
-            "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(): T {\n" +
-                    "    return when (simpleName) {\n"
+            "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(): T =\n" +
+                    "    VirtualReflectionUtil.$functionName(qualifiedName!!) as T\n" +
+                    "\n" +
+                    "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(vararg args: Any?): T =\n" +
+                    "    VirtualReflectionUtil.$functionName(qualifiedName!!, *args) as T\n" +
+                    "\n" +
+                    "object VirtualReflectionUtil {\n" +
+                    "    fun $functionName(name: String): Any = when (name) {\n"
         )
         //处理空参构造方法
         classConstructorList.forEach {
@@ -74,21 +80,20 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                 haveArgsConstructor.add(it)
                 return@forEach
             }
-            file.appendText("        \"${it.className}\" -> ${it.packageName}.${it.className}()\n")
+            val name = "${it.packageName}.${it.className}"
+            file.appendText("        \"$name\" -> $name()\n")
         }
         file.appendText(
-            "        else -> throw RuntimeException(\"\$this \$simpleName: Not find in VirtualReflection config\")\n" +
-                    "    } as T\n" +
-                    "}\n\n"
+            "        else -> throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n" +
+                    "    }\n" +
+                    "\n" +
+                    "    fun $functionName(name: String, vararg args: Any?): Any = when {\n"
         )
         //处理有参构造方法
-        file.appendText(
-            "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(vararg args: Any?): T {\n" +
-                    "    return when {\n"
-        )
         haveArgsConstructor.forEach {
+            val name = "${it.packageName}.${it.className}"
             file.appendText(
-                "        simpleName == \"${it.className}\" && args.size == ${it.constructorArgsType.size} -> ${it.packageName}.${it.className}("
+                "        name == \"$name\" && args.size == ${it.constructorArgsType.size} -> $name("
             )
             //处理参数强转
             it.constructorArgsType.forEachIndexed { index, s ->
@@ -97,8 +102,8 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
             file.appendText(")\n")
         }
         file.appendText(
-            "        else -> throw RuntimeException(\"\$this \$simpleName: Not find in VirtualReflection config\")\n" +
-                    "    } as T\n" +
+            "        else -> throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n" +
+                    "    }\n" +
                     "}"
         )
         file.close()

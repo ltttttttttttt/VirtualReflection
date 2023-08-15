@@ -85,7 +85,10 @@ ksp {
 use
 
 ```kotlin
+//Constructing Objects Using Non parametric Constructors
 KClass.newInstance()
-//or
+//Constructing Objects Using Parametric Constructors
 KClass.newInstance(parameters...)
+//By string method
+VirtualReflectionUtil.newInstance("com.lt.virtual_reflection.bean.A")
 ```

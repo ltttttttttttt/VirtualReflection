@@ -90,4 +90,6 @@ ksp {
 KClass.newInstance()
 //使用有参构造函数构造对象
 KClass.newInstance(参数...)
+//通过字符串方式
+VirtualReflectionUtil.newInstance("com.lt.virtual_reflection.bean.A")
 ```
