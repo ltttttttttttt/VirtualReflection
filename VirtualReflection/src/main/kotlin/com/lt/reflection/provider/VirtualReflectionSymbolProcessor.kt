@@ -66,10 +66,10 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val haveArgsConstructor = ArrayList<KSClassConstructorInfo>()
         file.appendText(
             "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(): T =\n" +
-                    "    VirtualReflectionUtil.$functionName(qualifiedName!!) as T\n" +
+                    "    VirtualReflectionUtil.$functionName(simpleName!!) as T\n" +
                     "\n" +
                     "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(vararg args: Any?): T =\n" +
-                    "    VirtualReflectionUtil.$functionName(qualifiedName!!, *args) as T\n" +
+                    "    VirtualReflectionUtil.$functionName(simpleName!!, *args) as T\n" +
                     "\n" +
                     "object VirtualReflectionUtil {\n" +
                     "    fun $functionName(name: String): Any = when (name) {\n"
@@ -81,7 +81,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                 return@forEach
             }
             val name = "${it.packageName}.${it.className}"
-            file.appendText("        \"$name\" -> $name()\n")
+            file.appendText("        \"${it.className}\" -> $name()\n")
         }
         file.appendText(
             "        else -> throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n" +
@@ -93,7 +93,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         haveArgsConstructor.forEach {
             val name = "${it.packageName}.${it.className}"
             file.appendText(
-                "        name == \"$name\" && args.size == ${it.constructorArgsType.size} -> $name("
+                "        name == \"${it.className}\" && args.size == ${it.constructorArgsType.size} -> $name("
             )
             //处理参数强转
             it.constructorArgsType.forEachIndexed { index, s ->

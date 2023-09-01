@@ -16,7 +16,6 @@ class A3 private constructor()
 
 class A4 private constructor() {
     constructor(a: A) : this()
-    constructor(a: HashMap<List<String?>?, Int?>?) : this()
 }
 
 abstract class A5 {}
