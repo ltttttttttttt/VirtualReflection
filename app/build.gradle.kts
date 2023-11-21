@@ -63,7 +63,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":VirtualReflection"))
+    implementation(project(":VirtualReflection-lib"))
     ksp(project(":VirtualReflection"))
 
     testImplementation("junit:junit:4.13.2")

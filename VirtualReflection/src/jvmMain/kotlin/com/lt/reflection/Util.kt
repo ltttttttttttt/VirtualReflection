@@ -57,3 +57,14 @@ internal fun getKSTypeInfo(ks: KSTypeReference): KSTypeInfo {
         typeString
     )
 }
+
+/**
+ * 不会重复的add方法
+ * ps:不能添加null,泛型类需要重写HashCode()和Equals()
+ */
+fun <T> MutableCollection<T>?.addNotRepeat(t: T?) {
+    this ?: return
+    t ?: return
+    if (!this.contains(t))
+        this.add(t)
+}

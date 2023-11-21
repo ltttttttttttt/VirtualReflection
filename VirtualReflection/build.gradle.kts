@@ -1,30 +1,31 @@
 plugins {
-    kotlin("jvm")
-    id("java-library")
-    id("maven-publish")
+    kotlin("multiplatform")
+    id("convention.publication")
 }
 
-group = "com.github.ltttttttttttt"
-version = "1.0.0"
+group = "io.github.ltttttttttttt"
+//上传到mavenCentral命令: ./gradlew publishAllPublicationsToSonatypeRepository
+//mavenCentral后台: https://s01.oss.sonatype.org/#stagingRepositories
+version = mVersion
 
-java {
-    //withSourcesJar()
-    //withJavadocJar()
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-publishing {
-    publications {
-        create("maven_public", MavenPublication::class) {
-            groupId = "com.github.ltttttttttttt"
-            artifactId = "library"
-            version = "1.0.0"
-            from(components.getByName("kotlin"))
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+            }
         }
     }
-}
+    sourceSets {
+        val commonMain by getting
+        val commonTest by getting
 
-dependencies {
-    implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
+        val jvmMain by getting {
+            dependencies {
+                implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
+                implementation(project(":VirtualReflection-lib"))
+            }
+        }
+        val jvmTest by getting
+    }
 }

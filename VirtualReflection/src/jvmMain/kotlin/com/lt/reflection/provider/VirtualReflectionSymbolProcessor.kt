@@ -5,9 +5,13 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.validate
+import com.lt.reflection.ReflectionObject
 import com.lt.reflection.appendText
 import com.lt.reflection.options.KSClassConstructorInfo
 import com.lt.reflection.options.KspOptions
@@ -22,7 +26,6 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
     //只做一轮处理
     private var isHandled = false
 
-    @OptIn(KspExperimental::class)
     override fun process(resolver: Resolver): List<KSAnnotated> {
         if (isHandled) return listOf()
         isHandled = true
@@ -31,27 +34,60 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val functionName = kspOptions.getFunctionName()
         val ret = mutableListOf<KSAnnotated>()
         val classConstructorList = ArrayList<KSClassConstructorInfo>()
+
+        //处理指定包内的构造函数
         resolver.getAllFiles()
             .filter {
                 //包名如果是配置的或子包名
                 val packageName = it.packageName.asString() + "."
                 packageList.any(packageName::contains)
             }.forEach { ksFile ->
-                resolver.getDeclarationsInSourceOrder(ksFile).forEach {
-                    if (it is KSClassDeclaration && it.classKind.type == "class") {
-                        if (!it.validate()) ret.add(it)
-                        else it.accept(
-                            VirtualReflectionVisitor(environment, classConstructorList),
-                            Unit
-                        )//处理符号
-                    }
+                handlerObjectWithKSFile(resolver, ksFile, ret, classConstructorList)
+            }
+        //处理注解标注的构造函数
+        resolver.getSymbolsWithAnnotation(ReflectionObject::class.qualifiedName!!)
+            .forEach {
+                when (it) {
+                    is KSFile -> handlerObjectWithKSFile(resolver, it, ret, classConstructorList)
+                    is KSDeclaration -> handlerObjectWithKSClass(it, ret, classConstructorList)
                 }
             }
+
         createFile(classConstructorList, functionName)
+
         //返回无法处理的符号
         return ret
     }
 
+    //虚拟反射构造函数-处理file
+    @OptIn(KspExperimental::class)
+    private fun handlerObjectWithKSFile(
+        resolver: Resolver,
+        ksFile: KSFile,
+        ret: MutableList<KSAnnotated>,
+        classConstructorList: ArrayList<KSClassConstructorInfo>
+    ) {
+        resolver.getDeclarationsInSourceOrder(ksFile).forEach {
+            handlerObjectWithKSClass(it, ret, classConstructorList)
+        }
+    }
+
+    //虚拟反射构造函数-处理class
+    private fun handlerObjectWithKSClass(
+        it: KSDeclaration,
+        ret: MutableList<KSAnnotated>,
+        classConstructorList: ArrayList<KSClassConstructorInfo>
+    ) {
+        if (it is KSClassDeclaration && it.classKind == ClassKind.CLASS) {
+            if (!it.validate()) ret.add(it)
+            else it.accept(
+                VirtualReflectionVisitor(environment, classConstructorList),
+                Unit
+            )//处理符号
+        }
+    }
+
+    //生成虚拟反射文件
     private fun createFile(
         classConstructorList: ArrayList<KSClassConstructorInfo>,
         functionName: String

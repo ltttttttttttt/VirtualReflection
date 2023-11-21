@@ -6,6 +6,7 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier
+import com.lt.reflection.addNotRepeat
 import com.lt.reflection.getKSTypeInfo
 import com.lt.reflection.options.KSClassConstructorInfo
 
@@ -31,7 +32,7 @@ internal class VirtualReflectionVisitor(
         classDeclaration.getConstructors()
             .filter { !it.isPrivate() }
             .forEach {
-                classConstructorList.add(
+                classConstructorList.addNotRepeat(
                     KSClassConstructorInfo(
                         className,
                         packageName,
