@@ -1,11 +1,14 @@
 package com.lt.reflection.provider
 
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier
+import com.lt.reflection.NotReflectionObjectConstructor
 import com.lt.reflection.addNotRepeat
 import com.lt.reflection.getKSTypeInfo
 import com.lt.reflection.options.KSClassConstructorInfo
@@ -23,6 +26,7 @@ internal class VirtualReflectionVisitor(
     /**
      * 访问class的声明
      */
+    @OptIn(KspExperimental::class)
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         //获取class信息并创建kt文件
         if (Modifier.PRIVATE in classDeclaration.modifiers) return
@@ -31,6 +35,9 @@ internal class VirtualReflectionVisitor(
         val className = classDeclaration.simpleName.asString()
         classDeclaration.getConstructors()
             .filter { !it.isPrivate() }
+            .filter {
+                it.getAnnotationsByType(NotReflectionObjectConstructor::class).toList().isEmpty()
+            }
             .forEach {
                 classConstructorList.addNotRepeat(
                     KSClassConstructorInfo(

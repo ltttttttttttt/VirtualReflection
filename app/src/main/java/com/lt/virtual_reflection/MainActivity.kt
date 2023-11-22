@@ -25,7 +25,7 @@ class MainActivity : Activity() {
             A::class.newInstance(),
             B::class.newInstance(6, "VirtualReflection"),
             C::class.newInstance(),
-            D::class.newInstance(),
+            D::class.newInstance(1, "2"),
             E1::class.newInstance(),
             E2::class.newInstance("test"),
         ).joinToString("\n")
