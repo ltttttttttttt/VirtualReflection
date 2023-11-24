@@ -3,8 +3,9 @@
 <p align="center">Virtual reflection of Kotlin all target</p>
 
 <p align="center">
+<img src="https://img.shields.io/badge/Kotlin-Multiplatform-%237f52ff?logo=kotlin">
 <img src="https://img.shields.io/badge/license-Apache%202-blue.svg?maxAge=2592000">
-<img src="https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg"/>
+<img src="https://img.shields.io/maven-central/v/io.github.ltttttttttttt/VirtualReflection"/>
 </p>
 
 <div align="center">us English | <a href="https://github.com/ltttttttttttt/VirtualReflection/blob/main/README_CN.md">cn 简体中文</a></div>
@@ -12,30 +13,14 @@
 ## ability
 
 1. Set all classes in certain packages to support virtual reflection
+2. Mark certain classes that can or cannot be virtually reflected through annotations
 
 ## How to use
 
-Step 1.Root dir, build.gradle.kts add:
+Step 1.Your app dir, build.gradle.kts add:
 
-```kotlin
-buildscript {
-    repositories {
-        maven("https://jitpack.io")//this
-        ...
-    }
-}
-
-allprojects {
-    repositories {
-        maven("https://jitpack.io")//this
-        ...
-    }
-}
-```
-
-Step 2.Your app dir, build.gradle.kts add:
-
-version = [![](https://jitpack.io/v/ltttttttttttt/VirtualReflection.svg)](https://jitpack.io/#ltttttttttttt/VirtualReflection)
+version
+= [![](https://img.shields.io/maven-central/v/io.github.ltttttttttttt/VirtualReflection)](https://repo1.maven.org/maven2/io/github/ltttttttttttt/VirtualReflection/)
 
 * If it is a single platform, add it to build.gradle.kts in the app module directory
 
@@ -47,7 +32,8 @@ plugins {
 //The fourth step of configuring ksp to generate directory reference links: https://github.com/ltttttttttttt/Buff/blob/main/README.md
 dependencies {
     ...
-    ksp("com.github.ltttttttttttt:VirtualReflection:$version")//this, such as 1.0.5
+    implementation("io.github.ltttttttttttt:VirtualReflection-lib:$version")//this, such as 1.2.1
+    ksp("io.github.ltttttttttttt:VirtualReflection:$version")//this, such as 1.2.1
 }
 ```
 
@@ -62,14 +48,19 @@ plugins {
 val commonMain by getting {
     //Configure the ksp generation directory
     kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    dependencies {
+        ...
+        api("io.github.ltttttttttttt:VirtualReflection-lib:$version")//this, such as 1.2.1
+    }
 }
+
 ...
 dependencies {
-    add("kspCommonMainMetadata", "com.github.ltttttttttttt:VirtualReflection:$version")//this, such as 1.0.5
+    add("kspCommonMainMetadata", "io.github.ltttttttttttt:VirtualReflection:$version")//this, such as 1.2.1
 }
 ```
 
-Step 3.Use VirtualReflection
+Step 2.Use VirtualReflection
 
 Configure packages that require virtual reflection, Your app dir, build.gradle.kts -> android(or kotlin) add:
 
@@ -91,4 +82,8 @@ KClass.newInstance()
 KClass.newInstance(parameters...)
 //By string method
 VirtualReflectionUtil.newInstance("com.lt.virtual_reflection.bean.A")
+//Additional configuration of classes or files that can be virtually reflected
+@ReflectionObject
+//Configure the constructor within the path to not support virtual reflection
+@NotReflectionObjectConstructor
 ```
