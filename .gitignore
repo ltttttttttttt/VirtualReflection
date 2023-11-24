@@ -69,3 +69,13 @@ jiagu_apks_output/
 
 # vscode
 .vscode/
+
+# ios
+iosApp/Podfile.lock
+iosApp/Pods
+iosApp/iosApp.xcworkspace/
+iosApp/iosApp.xcodeproj
+!iosApp/iosApp.xcodeproj/project.pbxproj
+*.podspec
+
+secring.gpg
