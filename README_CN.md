@@ -70,6 +70,7 @@ ksp {
     arg("packageListWithVirtualReflection", "com.lt.virtual_reflection.bean/*你的包路径*/")
     //配置生成的方法名,默认是newInstance
     //arg("functionNameWithVirtualReflection", xxx)
+    // TODO by lt 2024/3/2 23:38 默认是用string获取对象,可以通过参数改成通过class获取对象,这样就可以不用混淆了,改好后去掉混淆
 }
 ```
 
@@ -81,7 +82,7 @@ KClass.newInstance()
 //使用有参构造函数构造对象
 KClass.newInstance(参数...)
 //通过字符串方式
-VirtualReflectionUtil.newInstance("com.lt.virtual_reflection.bean.A")
+VirtualReflectionUtil.newInstance("MainActivity")
 //额外配置可以虚拟反射的类或文件
 @ReflectionObject
 //配置路径内的构造函数,使其不支持虚拟反射

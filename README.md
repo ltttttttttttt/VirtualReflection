@@ -81,7 +81,7 @@ KClass.newInstance()
 //Constructing Objects Using Parametric Constructors
 KClass.newInstance(parameters...)
 //By string method
-VirtualReflectionUtil.newInstance("com.lt.virtual_reflection.bean.A")
+VirtualReflectionUtil.newInstance("MainActivity")
 //Additional configuration of classes or files that can be virtually reflected
 @ReflectionObject
 //Configure the constructor within the path to not support virtual reflection
