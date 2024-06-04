@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -33,6 +36,23 @@ kotlin {
         }
     }
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "VirtualReflection-lib"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "VirtualReflection-lib.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
+                        add(project.projectDir.path)
+                    }
+                }
+            }
+        }
+        binaries.executable()
+    }
+
     cocoapods {
         summary = "VirtualReflection"
         homepage = "https://github.com/ltttttttttttt/VirtualReflection"
@@ -51,7 +71,7 @@ kotlin {
         val commonTest by getting
 
         val androidMain by getting
-        val androidTest by getting
+        val androidUnitTest by getting
 
         val jvmMain by getting
         val jvmTest by getting
@@ -66,6 +86,8 @@ kotlin {
         }
 
         val jsMain by getting
+
+        val wasmJsMain by getting
     }
 }
 
@@ -78,7 +100,7 @@ android {
         sourceSets["main"].res.srcDir("resources")
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
