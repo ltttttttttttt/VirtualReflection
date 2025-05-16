@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'VirtualReflection_lib'
-    spec.version                  = '1.3.1'
+    spec.version                  = '1.4.1'
     spec.homepage                 = 'https://github.com/ltttttttttttt/VirtualReflection'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''

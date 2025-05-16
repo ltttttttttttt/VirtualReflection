@@ -44,7 +44,7 @@ android {
 }
 
 kotlin {
-    android {
+    androidTarget {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "11"
@@ -60,7 +60,8 @@ kotlin {
         }
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
 
     js(IR) {
@@ -116,14 +117,12 @@ kotlin {
         val desktopMain by getting
         val desktopTest by getting
 
-        val iosMain by getting
-        val iosTest by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
-        val iosSimulatorArm64Test by getting {
-            dependsOn(iosTest)
-        }
+        val iosX64Main by getting
+        val iosX64Test by getting
+        val iosArm64Main by getting
+        val iosArm64Test by getting
+        val iosSimulatorArm64Main by getting
+        val iosSimulatorArm64Test by getting
 
 //        val macosMain by creating {
 //            dependsOn(commonMain)

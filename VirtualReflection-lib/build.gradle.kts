@@ -14,7 +14,7 @@ group = "io.github.ltttttttttttt"
 version = mVersion
 
 kotlin {
-    android {
+    androidTarget {
         publishLibraryVariants("debug", "release")
     }
 
@@ -26,7 +26,8 @@ kotlin {
         }
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
 
     js(IR) {
@@ -76,14 +77,12 @@ kotlin {
         val jvmMain by getting
         val jvmTest by getting
 
-        val iosMain by getting
-        val iosTest by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
-        val iosSimulatorArm64Test by getting {
-            dependsOn(iosTest)
-        }
+        val iosX64Main by getting
+        val iosX64Test by getting
+        val iosArm64Main by getting
+        val iosArm64Test by getting
+        val iosSimulatorArm64Main by getting
+        val iosSimulatorArm64Test by getting
 
         val jsMain by getting
 
@@ -92,7 +91,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 35
     defaultConfig {
         minSdk = 21
         targetSdk = 31
