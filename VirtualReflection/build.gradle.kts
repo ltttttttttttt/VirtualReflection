@@ -29,3 +29,11 @@ kotlin {
         val jvmTest by getting
     }
 }
+
+afterEvaluate {
+    try {
+        tasks.findByName("signKotlinMultiplatformPublication")!!
+            .mustRunAfter(tasks.findByName("publishJvmPublicationToSonatypeRepository"))
+    } catch (ignore: Exception) {
+    }
+}
