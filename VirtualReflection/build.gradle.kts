@@ -23,6 +23,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
+                implementation("com.github.ltttttttttttt:KSPUtil:1.0.1")
                 implementation(project(":VirtualReflection-lib"))
             }
         }

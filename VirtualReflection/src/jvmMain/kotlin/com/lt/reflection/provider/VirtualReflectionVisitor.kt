@@ -8,9 +8,9 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier
+import com.lt.ksp.getKSTypeInfo
 import com.lt.reflection.NotReflectionObjectConstructor
 import com.lt.reflection.addNotRepeat
-import com.lt.reflection.getKSTypeInfo
 import com.lt.reflection.options.KSClassConstructorInfo
 
 /**
@@ -44,7 +44,7 @@ internal class VirtualReflectionVisitor(
                         className,
                         packageName,
                         it.parameters.map {
-                            getKSTypeInfo(it.type).toString()
+                            getKSTypeInfo(it.type, null, classDeclaration).toString()
                         },
                         classDeclaration.containingFile
                     )
