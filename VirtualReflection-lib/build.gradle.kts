@@ -10,9 +10,7 @@ plugins {
     id("com.vanniktech.maven.publish") version publishVersion
 }
 
-group = "io.github.ltttttttttttt"
-//上传到mavenCentral命令: ./gradlew publishAllPublicationsToSonatypeRepository
-//mavenCentral后台: https://s01.oss.sonatype.org/#stagingRepositories
+group = PublishConfig.group
 version = mVersion
 
 mavenPublishing {
@@ -24,9 +22,9 @@ mavenPublishing {
 
     pom {
         name = project.name
-        description = "Virtual reflection of KMP"
-        inceptionYear = "2023"
-        url = "https://github.com/ltttttttttttt/VirtualReflection"
+        description = PublishConfig.description
+        inceptionYear = PublishConfig.inceptionYear
+        url = PublishConfig.projectUrl
         licenses {
             license {
                 name = "The Apache License, Version 2.0"
@@ -43,7 +41,7 @@ mavenPublishing {
             }
         }
         scm {
-            url = "https://github.com/ltttttttttttt/VirtualReflection"
+            url = PublishConfig.projectUrl
         }
     }
 }
