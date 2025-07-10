@@ -1,6 +1,9 @@
 plugins {
     kotlin("multiplatform")
-    id("com.vanniktech.maven.publish") version publishVersion//https://github.com/vanniktech/gradle-maven-publish-plugin https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html#publish-to-maven-central-using-continuous-integration
+    //https://github.com/vanniktech/gradle-maven-publish-plugin
+    //https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html#publish-to-maven-central-using-continuous-integration
+    //https://central.sonatype.com/publishing/deployments
+    id("com.vanniktech.maven.publish") version publishVersion
 }
 
 group = PublishConfig.group
