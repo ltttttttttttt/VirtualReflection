@@ -100,10 +100,10 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val haveArgsConstructor = ArrayList<KSClassConstructorInfo>()
         file.appendText(
             "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(): T =\n" +
-                    "    VirtualReflectionUtil.$functionName(this) as T\n" +
+                    "    $className.$functionName(this) as T\n" +
                     "\n" +
                     "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(vararg args: Any?): T =\n" +
-                    "    VirtualReflectionUtil.$functionName(this, *args) as T\n" +
+                    "    $className.$functionName(this, *args) as T\n" +
                     "\n" +
                     "object $className {\n" +
                     "    fun ${functionName}OrNull(kClass: kotlin.reflect.KClass<*>): Any? = when (kClass) {\n"
