@@ -138,6 +138,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                     "    }\n" +
                     "}"
         )
+        file.flush()
         file.close()
     }
 }
