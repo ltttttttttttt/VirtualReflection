@@ -28,6 +28,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val kspOptions = KspOptions(environment)
         val packageList = kspOptions.getPackageList()
         val functionName = kspOptions.getFunctionName()
+        val className = kspOptions.getClassName()
         val ret = mutableListOf<KSAnnotated>()
         val classConstructorSet = mutableSetOf<KSClassConstructorInfo>()
 
@@ -49,7 +50,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                 }
             }
 
-        createFile(classConstructorSet, functionName)
+        createFile(classConstructorSet, functionName, className)
 
         //返回无法处理的符号
         return ret
@@ -86,13 +87,14 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
     //生成虚拟反射文件
     private fun createFile(
         classConstructorSet: MutableSet<KSClassConstructorInfo>,
-        functionName: String
+        functionName: String,
+        className: String
     ) {
         val file = environment.codeGenerator.createNewFile(
             Dependencies(
                 true,
                 *classConstructorSet.mapNotNull { it.ksFile }.toSet().toTypedArray()
-            ), "", "VirtualReflectionUtil"
+            ), "", className
         )
         //记录有参数的构造方法,稍后处理
         val haveArgsConstructor = ArrayList<KSClassConstructorInfo>()
@@ -103,7 +105,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                     "fun <T : Any> kotlin.reflect.KClass<T>.$functionName(vararg args: Any?): T =\n" +
                     "    VirtualReflectionUtil.$functionName(simpleName!!, *args) as T\n" +
                     "\n" +
-                    "object VirtualReflectionUtil {\n" +
+                    "object $className {\n" +
                     "    fun ${functionName}OrNull(name: String): Any? = when (name) {\n"
         )
         //处理空参构造方法

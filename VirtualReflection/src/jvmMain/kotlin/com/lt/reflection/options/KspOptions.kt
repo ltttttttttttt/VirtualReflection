@@ -12,6 +12,7 @@ internal class KspOptions(environment: SymbolProcessorEnvironment) {
     private val options = environment.options
     private val packageList = "packageListWithVirtualReflection"
     private val functionName = "functionNameWithVirtualReflection"
+    private val className = "classNameWithVirtualReflection"
 
     /**
      * 具体哪些包(完全相等)中的类需要虚拟反射功能,空格隔开
@@ -26,4 +27,10 @@ internal class KspOptions(environment: SymbolProcessorEnvironment) {
      */
     fun getFunctionName(): String =
         options[functionName].ifNullOfEmpty { return "newInstance" }
+
+    /**
+     * 生成的类名,默认VirtualReflectionUtil
+     */
+    fun getClassName(): String =
+        options[className].ifNullOfEmpty { return "VirtualReflectionUtil" }
 }

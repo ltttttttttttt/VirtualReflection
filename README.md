@@ -70,6 +70,8 @@ ksp {
     arg("packageListWithVirtualReflection", "com.lt.virtual_reflection.bean/*your package*/")
     //Configure the generated function name, which defaults to newInstance
     //arg("functionNameWithVirtualReflection", xxx)
+    //Configure the generated class name, which defaults to VirtualReflectionUtil
+    //arg("classNameWithVirtualReflection", xxx)
 }
 ```
 
