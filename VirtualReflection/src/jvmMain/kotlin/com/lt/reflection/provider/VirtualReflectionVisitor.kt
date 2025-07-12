@@ -20,7 +20,7 @@ import com.lt.reflection.options.KSClassConstructorInfo
  */
 internal class VirtualReflectionVisitor(
     private val environment: SymbolProcessorEnvironment,
-    private val classConstructorList: ArrayList<KSClassConstructorInfo>
+    private val classConstructorSet: MutableSet<KSClassConstructorInfo>
 ) : KSVisitorVoid() {
 
     /**
@@ -39,7 +39,7 @@ internal class VirtualReflectionVisitor(
                 it.getAnnotationsByType(NotReflectionObjectConstructor::class).toList().isEmpty()
             }
             .forEach {
-                classConstructorList.addNotRepeat(
+                classConstructorSet.add(
                     KSClassConstructorInfo(
                         className,
                         packageName,

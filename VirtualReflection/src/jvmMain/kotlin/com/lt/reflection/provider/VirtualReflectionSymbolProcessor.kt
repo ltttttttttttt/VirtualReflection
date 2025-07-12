@@ -29,27 +29,27 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val packageList = kspOptions.getPackageList()
         val functionName = kspOptions.getFunctionName()
         val ret = mutableListOf<KSAnnotated>()
-        val classConstructorList = ArrayList<KSClassConstructorInfo>()
+        val classConstructorSet = mutableSetOf<KSClassConstructorInfo>()
 
         //处理指定包内的构造函数
         resolver.getAllFiles()
             .filter {
                 //包名如果是配置的或子包名
                 val packageName = it.packageName.asString() + "."
-                packageList.any(packageName::contains)
+                packageList.any(packageName::startsWith)
             }.forEach { ksFile ->
-                handlerObjectWithKSFile(resolver, ksFile, ret, classConstructorList)
+                handlerObjectWithKSFile(resolver, ksFile, ret, classConstructorSet)
             }
         //处理注解标注的构造函数
         resolver.getSymbolsWithAnnotation(ReflectionObject::class.qualifiedName!!)
             .forEach {
                 when (it) {
-                    is KSFile -> handlerObjectWithKSFile(resolver, it, ret, classConstructorList)
-                    is KSDeclaration -> handlerObjectWithKSClass(it, ret, classConstructorList)
+                    is KSFile -> handlerObjectWithKSFile(resolver, it, ret, classConstructorSet)
+                    is KSDeclaration -> handlerObjectWithKSClass(it, ret, classConstructorSet)
                 }
             }
 
-        createFile(classConstructorList, functionName)
+        createFile(classConstructorSet, functionName)
 
         //返回无法处理的符号
         return ret
@@ -61,10 +61,10 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         resolver: Resolver,
         ksFile: KSFile,
         ret: MutableList<KSAnnotated>,
-        classConstructorList: ArrayList<KSClassConstructorInfo>
+        classConstructorSet: MutableSet<KSClassConstructorInfo>
     ) {
         resolver.getDeclarationsInSourceOrder(ksFile).forEach {
-            handlerObjectWithKSClass(it, ret, classConstructorList)
+            handlerObjectWithKSClass(it, ret, classConstructorSet)
         }
     }
 
@@ -72,12 +72,12 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
     private fun handlerObjectWithKSClass(
         it: KSDeclaration,
         ret: MutableList<KSAnnotated>,
-        classConstructorList: ArrayList<KSClassConstructorInfo>
+        classConstructorSet: MutableSet<KSClassConstructorInfo>
     ) {
         if (it is KSClassDeclaration && it.classKind == ClassKind.CLASS) {
             if (!it.validate()) ret.add(it)
             else it.accept(
-                VirtualReflectionVisitor(environment, classConstructorList),
+                VirtualReflectionVisitor(environment, classConstructorSet),
                 Unit
             )//处理符号
         }
@@ -85,13 +85,13 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
 
     //生成虚拟反射文件
     private fun createFile(
-        classConstructorList: ArrayList<KSClassConstructorInfo>,
+        classConstructorSet: MutableSet<KSClassConstructorInfo>,
         functionName: String
     ) {
         val file = environment.codeGenerator.createNewFile(
             Dependencies(
                 true,
-                *classConstructorList.mapNotNull { it.ksFile }.toSet().toTypedArray()
+                *classConstructorSet.mapNotNull { it.ksFile }.toSet().toTypedArray()
             ), "", "VirtualReflectionUtil"
         )
         //记录有参数的构造方法,稍后处理
@@ -104,10 +104,10 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                     "    VirtualReflectionUtil.$functionName(simpleName!!, *args) as T\n" +
                     "\n" +
                     "object VirtualReflectionUtil {\n" +
-                    "    fun $functionName(name: String): Any = when (name) {\n"
+                    "    fun ${functionName}OrNull(name: String): Any? = when (name) {\n"
         )
         //处理空参构造方法
-        classConstructorList.forEach {
+        classConstructorSet.forEach {
             if (it.constructorArgsType.isNotEmpty()) {
                 haveArgsConstructor.add(it)
                 return@forEach
@@ -116,10 +116,10 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
             file.appendText("        \"${it.className}\" -> $name()\n")
         }
         file.appendText(
-            "        else -> throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n" +
+            "        else -> null\n" +
                     "    }\n" +
                     "\n" +
-                    "    fun $functionName(name: String, vararg args: Any?): Any = when {\n"
+                    "    fun ${functionName}OrNull(name: String, vararg args: Any?): Any? = when {\n"
         )
         //处理有参构造方法
         haveArgsConstructor.forEach {
@@ -134,8 +134,12 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
             file.appendText(")\n")
         }
         file.appendText(
-            "        else -> throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n" +
-                    "    }\n" +
+            "        else -> null\n" +
+                    "    }\n\n" +
+                    "    fun $functionName(name: String): Any =\n" +
+                    "            ${functionName}OrNull(name) ?: throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n\n" +
+                    "    fun $functionName(name: String, vararg args: Any?): Any =\n" +
+                    "            ${functionName}OrNull(name, *args) ?: throw RuntimeException(\"\$name: Not find in VirtualReflection config\")\n" +
                     "}"
         )
         file.flush()
