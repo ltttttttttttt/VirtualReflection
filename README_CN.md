@@ -72,7 +72,6 @@ ksp {
     //arg("functionNameWithVirtualReflection", xxx)
     //配置生成的类名,默认是VirtualReflectionUtil
     //arg("classNameWithVirtualReflection", xxx)
-    // TODO by lt 2024/3/2 23:38 默认是用string获取对象,可以通过参数改成通过class获取对象,这样就可以不用混淆了,改好后去掉混淆
 }
 ```
 
