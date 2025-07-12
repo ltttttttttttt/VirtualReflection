@@ -6,7 +6,6 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.*
-import com.google.devtools.ksp.validate
 import com.lt.ksp.appendText
 import com.lt.reflection.ReflectionObject
 import com.lt.reflection.options.KSClassConstructorInfo
@@ -29,7 +28,6 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
         val packageList = kspOptions.getPackageList()
         val functionName = kspOptions.getFunctionName()
         val className = kspOptions.getClassName()
-        val ret = mutableListOf<KSAnnotated>()
         val classConstructorSet = mutableSetOf<KSClassConstructorInfo>()
 
         //处理指定包内的构造函数
@@ -39,21 +37,21 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
                 val packageName = it.packageName.asString() + "."
                 packageList.any(packageName::startsWith)
             }.forEach { ksFile ->
-                handlerObjectWithKSFile(resolver, ksFile, ret, classConstructorSet)
+                handlerObjectWithKSFile(resolver, ksFile, classConstructorSet)
             }
         //处理注解标注的构造函数
         resolver.getSymbolsWithAnnotation(ReflectionObject::class.qualifiedName!!)
             .forEach {
                 when (it) {
-                    is KSFile -> handlerObjectWithKSFile(resolver, it, ret, classConstructorSet)
-                    is KSDeclaration -> handlerObjectWithKSClass(it, ret, classConstructorSet)
+                    is KSFile -> handlerObjectWithKSFile(resolver, it, classConstructorSet)
+                    is KSDeclaration -> handlerObjectWithKSClass(it, classConstructorSet)
                 }
             }
 
         createFile(classConstructorSet, functionName, className)
 
         //返回无法处理的符号
-        return ret
+        return listOf()
     }
 
     //虚拟反射构造函数-处理file
@@ -61,23 +59,20 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
     private fun handlerObjectWithKSFile(
         resolver: Resolver,
         ksFile: KSFile,
-        ret: MutableList<KSAnnotated>,
         classConstructorSet: MutableSet<KSClassConstructorInfo>
     ) {
         resolver.getDeclarationsInSourceOrder(ksFile).forEach {
-            handlerObjectWithKSClass(it, ret, classConstructorSet)
+            handlerObjectWithKSClass(it, classConstructorSet)
         }
     }
 
     //虚拟反射构造函数-处理class
     private fun handlerObjectWithKSClass(
         it: KSDeclaration,
-        ret: MutableList<KSAnnotated>,
         classConstructorSet: MutableSet<KSClassConstructorInfo>
     ) {
         if (it is KSClassDeclaration && it.classKind == ClassKind.CLASS) {
-            if (!it.validate()) ret.add(it)
-            else it.accept(
+            it.accept(
                 VirtualReflectionVisitor(environment, classConstructorSet),
                 Unit
             )//处理符号
