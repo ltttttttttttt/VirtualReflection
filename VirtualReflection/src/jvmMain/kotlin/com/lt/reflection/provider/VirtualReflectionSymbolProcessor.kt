@@ -10,6 +10,8 @@ import com.lt.ksp.appendText
 import com.lt.reflection.ReflectionObject
 import com.lt.reflection.options.KSClassConstructorInfo
 import com.lt.reflection.options.KspOptions
+import java.io.File
+import java.io.OutputStream
 
 /**
  * creator: lt  2022/10/20  lt.dygzs@qq.com
@@ -49,6 +51,27 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
             }
 
         createFile(classConstructorSet, functionName, className)
+        //ios临时方案
+        val iosTargetName = kspOptions.getIosTargetName()
+        val fileName = "$className.kt"
+        environment.codeGenerator.generatedFile.find {
+            val path = it.absolutePath
+            path.endsWith(fileName) && path.contains("${File.separator}ksp${File.separator}ios")
+        }?.let {
+            val targetFile = File(
+                File(it.absolutePath.split("${File.separator}ksp${File.separator}").first(), "ksp${File.separator}iosMain${File.separator}kotlin"),
+                "$className$iosTargetName.kt"
+            )
+            targetFile.parentFile?.let {
+                if (!it.exists()) it.mkdirs()
+            }
+            createFile(
+                classConstructorSet,
+                functionName + iosTargetName,
+                className + iosTargetName,
+                targetFile.outputStream()
+            )
+        }
 
         //返回无法处理的符号
         return listOf()
@@ -83,14 +106,14 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
     private fun createFile(
         classConstructorSet: MutableSet<KSClassConstructorInfo>,
         functionName: String,
-        className: String
-    ) {
-        val file = environment.codeGenerator.createNewFile(
+        className: String,
+        file: OutputStream = environment.codeGenerator.createNewFile(
             Dependencies(
                 true,
                 *classConstructorSet.mapNotNull { it.ksFile }.toSet().toTypedArray()
             ), "", className
-        )
+        ),
+    ) {
         //记录有参数的构造方法,稍后处理
         val haveArgsConstructor = ArrayList<KSClassConstructorInfo>()
         file.appendText(

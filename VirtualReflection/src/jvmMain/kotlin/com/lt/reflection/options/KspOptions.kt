@@ -13,6 +13,7 @@ internal class KspOptions(environment: SymbolProcessorEnvironment) {
     private val packageList = "packageListWithVirtualReflection"
     private val functionName = "functionNameWithVirtualReflection"
     private val className = "classNameWithVirtualReflection"
+    private val iosTargetName = "iosTargetNameWithVirtualReflection"
 
     /**
      * 具体哪些包(完全相等)中的类需要虚拟反射功能,空格隔开
@@ -33,4 +34,11 @@ internal class KspOptions(environment: SymbolProcessorEnvironment) {
      */
     fun getClassName(): String =
         options[className].ifNullOfEmpty { return "VirtualReflectionUtil" }
+
+    /**
+     * copy到iosMain的类名和方法名后缀,WithIOS
+     * ps:由于ksp ios不支持iosMain,所以此作为临时方案
+     */
+    fun getIosTargetName(): String =
+        options[iosTargetName].ifNullOfEmpty { return "WithIOS" }
 }
