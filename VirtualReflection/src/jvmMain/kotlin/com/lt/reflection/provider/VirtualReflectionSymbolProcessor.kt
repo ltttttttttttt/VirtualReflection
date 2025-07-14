@@ -59,7 +59,7 @@ internal class VirtualReflectionSymbolProcessor(private val environment: SymbolP
             path.endsWith(fileName) && path.contains("${File.separator}ksp${File.separator}ios")
         }?.let {
             val targetFile = File(
-                File(it.absolutePath.split("${File.separator}ksp${File.separator}").first(), "ksp${File.separator}iosMain${File.separator}kotlin"),
+                File(it.absolutePath.split("${File.separator}ksp${File.separator}").first(), "ksp${File.separator}ios${File.separator}iosMain${File.separator}kotlin"),
                 "$className$iosTargetName.kt"
             )
             targetFile.parentFile?.let {
